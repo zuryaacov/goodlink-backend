@@ -1,0 +1,18 @@
+{
+  "name": "goodlink-backend",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker for GoodLink backend - handles link redirects based on slug and domain",
+  "main": "src/index.js",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "tail": "wrangler tail"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^4.54.0"
+  }
+}
+
