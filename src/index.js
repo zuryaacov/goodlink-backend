@@ -15,7 +15,7 @@
  * GET https://goodlink.ai/abc123 -> redirects to target_url
  * GET https://glynk.io/xyz789 -> redirects to target_url
  */
-
+/* yaaacov */
 /**
  * Extract slug from URL path
  * @param {string} pathname - URL pathname (e.g., "/abc123" or "/abc123?param=value")
@@ -24,18 +24,18 @@
 function extractSlug(pathname) {
   // Remove leading slash and query parameters
   const path = pathname.replace(/^\//, '').split('?')[0].split('#')[0];
-  
+
   // Return null for empty paths or common paths
   if (!path || path === '' || path === 'index.html' || path.startsWith('api/')) {
     return null;
   }
-  
+
   // Validate slug format (alphanumeric and hyphens, 3-30 chars)
   const slugPattern = /^[a-z0-9-]{3,30}$/i;
   if (!slugPattern.test(path)) {
     return null;
   }
-  
+
   return path.toLowerCase();
 }
 
@@ -50,7 +50,7 @@ function buildTargetUrl(targetUrl, linkData, requestUrl) {
   try {
     const target = new URL(targetUrl);
     const requestParams = new URLSearchParams(requestUrl.search);
-    
+
     // Add UTM parameters if configured
     if (linkData.utm_source) {
       target.searchParams.set('utm_source', linkData.utm_source);
@@ -64,7 +64,7 @@ function buildTargetUrl(targetUrl, linkData, requestUrl) {
     if (linkData.utm_content) {
       target.searchParams.set('utm_content', linkData.utm_content);
     }
-    
+
     // Pass through query parameters if enabled
     if (linkData.parameter_pass_through) {
       for (const [key, value] of requestParams.entries()) {
@@ -74,7 +74,7 @@ function buildTargetUrl(targetUrl, linkData, requestUrl) {
         }
       }
     }
-    
+
     return target.toString();
   } catch (error) {
     // If URL parsing fails, return original target_url
@@ -96,7 +96,7 @@ async function getLinkFromSupabase(slug, domain, supabaseUrl, supabaseKey) {
     // Use Supabase REST API directly (no client library in Workers)
     // Check if status column exists, if not, just filter by slug and domain
     const url = `${supabaseUrl}/rest/v1/links?slug=eq.${encodeURIComponent(slug)}&domain=eq.${encodeURIComponent(domain)}&select=target_url,parameter_pass_through,utm_source,utm_medium,utm_campaign,utm_content,status`;
-    
+
     const response = await fetch(url, {
       method: 'GET',
       headers: {
@@ -113,18 +113,18 @@ async function getLinkFromSupabase(slug, domain, supabaseUrl, supabaseKey) {
     }
 
     const data = await response.json();
-    
+
     if (!data || data.length === 0) {
       return null;
     }
-    
+
     const link = data[0];
-    
+
     // Check status if column exists (some databases might not have it yet)
     if (link.status !== undefined && link.status === false) {
       return null; // Link is inactive
     }
-    
+
     return link;
   } catch (error) {
     console.error('Error querying Supabase:', error);
@@ -150,10 +150,10 @@ export default {
 
       // Extract slug from path
       const slug = extractSlug(pathname);
-      
+
       if (!slug) {
         // No valid slug found - return 404
-        return new Response('Link not found', { 
+        return new Response('Link not found', {
           status: 404,
           headers: {
             'Content-Type': 'text/plain',
@@ -177,7 +177,7 @@ export default {
 
       if (!linkData || !linkData.target_url) {
         // Link not found or inactive
-        return new Response('Link not found', { 
+        return new Response('Link not found', {
           status: 404,
           headers: {
             'Content-Type': 'text/plain',
@@ -195,7 +195,7 @@ export default {
 
     } catch (error) {
       console.error('Worker error:', error);
-      return new Response('Internal server error', { 
+      return new Response('Internal server error', {
         status: 500,
         headers: {
           'Content-Type': 'text/plain',
